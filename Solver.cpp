@@ -1558,6 +1558,92 @@ string Solver::simplify_move(const string move_string) {
     return new_move_string;
 }
 
+// Transforma uma string de movimentos normal em outra sequencia que um robot com dois
+// servos consegue executar
+string Solver::robotic_move(const string move_string) {
+    string move_sequence = simplify_move(move_string);
+    string final_move_sequence = "";
+    // Percorrer todos os caracteres da string
+    for (int c = 0; c < move_sequence.size(); c++) {
+        char move_char = move_sequence[c];
+        // M é girar o cubo como um todo no sentido de R' (com as 3 camadas)
+        // G é girar o cubo como um todo no sentido de U (com as 3 camadas)
+        // T é igual a D
+        switch (move_char) {
+            case 'U':
+                // Sequencia
+                final_move_sequence += "M2 T";
+                // Atualizar movimentos
+                replace(move_sequence.begin(), move_sequence.end(), 'U', 'd');
+                replace(move_sequence.begin(), move_sequence.end(), 'F', 'b');
+                replace(move_sequence.begin(), move_sequence.end(), 'B', 'f');
+                replace(move_sequence.begin(), move_sequence.end(), 'D', 'u');
+                transform(move_sequence.begin(), move_sequence.end(),
+                          move_sequence.begin(), ::toupper);
+                break;
+            case 'F':
+                // Sequencia
+                final_move_sequence += "M T";
+                // Atualizar movimentos
+                replace(move_sequence.begin(), move_sequence.end(), 'U', 'f');
+                replace(move_sequence.begin(), move_sequence.end(), 'F', 'd');
+                replace(move_sequence.begin(), move_sequence.end(), 'B', 'u');
+                replace(move_sequence.begin(), move_sequence.end(), 'D', 'b');
+                transform(move_sequence.begin(), move_sequence.end(),
+                          move_sequence.begin(), ::toupper);
+                break;
+            case 'R':
+                // Sequencia
+                final_move_sequence += "G M T";
+                // Atualizar movimentos
+                replace(move_sequence.begin(), move_sequence.end(), 'U', 'f');
+                replace(move_sequence.begin(), move_sequence.end(), 'F', 'r');
+                replace(move_sequence.begin(), move_sequence.end(), 'R', 'd');
+                replace(move_sequence.begin(), move_sequence.end(), 'B', 'r');
+                replace(move_sequence.begin(), move_sequence.end(), 'L', 'u');
+                replace(move_sequence.begin(), move_sequence.end(), 'D', 'b');
+                transform(move_sequence.begin(), move_sequence.end(),
+                          move_sequence.begin(), ::toupper);
+                break;
+            case 'B':
+                // Sequencia
+                final_move_sequence += "G2 M T";
+                // Atualizar movimentos
+                replace(move_sequence.begin(), move_sequence.end(), 'U', 'f');
+                replace(move_sequence.begin(), move_sequence.end(), 'F', 'u');
+                replace(move_sequence.begin(), move_sequence.end(), 'R', 'l');
+                replace(move_sequence.begin(), move_sequence.end(), 'B', 'd');
+                replace(move_sequence.begin(), move_sequence.end(), 'L', 'u');
+                replace(move_sequence.begin(), move_sequence.end(), 'D', 'b');
+                transform(move_sequence.begin(), move_sequence.end(),
+                          move_sequence.begin(), ::toupper);
+                break;
+            case 'L':
+                // Sequencia
+                final_move_sequence += "G' M T";
+                // Atualizar movimentos
+                replace(move_sequence.begin(), move_sequence.end(), 'U', 'f');
+                replace(move_sequence.begin(), move_sequence.end(), 'F', 'r');
+                replace(move_sequence.begin(), move_sequence.end(), 'R', 'u');
+                replace(move_sequence.begin(), move_sequence.end(), 'B', 'l');
+                replace(move_sequence.begin(), move_sequence.end(), 'L', 'd');
+                replace(move_sequence.begin(), move_sequence.end(), 'D', 'b');
+                transform(move_sequence.begin(), move_sequence.end(),
+                          move_sequence.begin(), ::toupper);
+                break;
+            case 'D':
+                // Sequencia
+                final_move_sequence += "T";
+                break;
+            default:
+                final_move_sequence += move_char;
+                break;
+        }
+    }
+
+    return final_move_sequence;
+}
+
 // Aplica um embaralhamento de um determinado tamanho
 string Solver::scramble(int size) {
     string move_set[] = {"U",  "F",  "R",  "B",  "L",  "D",  "U'", "F'", "R'",
