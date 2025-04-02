@@ -801,11 +801,12 @@ string Solver::revert_move(const string move_string) {
     return oss.str();
 }
 
-// Obtem uma string espelhada (esquerda-direita e/ou frente-tras)
+// Obtem uma string espelhada (esquerda-direita e/ou frente-tras e/ou
+// frente-tras)
 string Solver::mirror_move(const string move_string, int right_left_mirror,
-                           int front_back_mirror) {
+                           int up_down_mirror, int front_back_mirror) {
     // Se não houver nenhum espelhamento retorna o original
-    if (!right_left_mirror && !front_back_mirror) {
+    if (!right_left_mirror && !up_down_mirror && !front_back_mirror) {
         return move_string;
     }
     stringstream ss(move_string);
@@ -813,101 +814,104 @@ string Solver::mirror_move(const string move_string, int right_left_mirror,
     string move;
 
     while (ss >> move) {
-        // Se houver espelhamento duplo
-        if (right_left_mirror && front_back_mirror) {
-            if (move == "F'")
-                new_move_string += " B'";
-            else if (move == "F")
-                new_move_string += " B";
-            else if (move == "R'")
-                new_move_string += " L'";
-            else if (move == "R")
-                new_move_string += " L";
-            else if (move == "B'")
-                new_move_string += " F'";
-            else if (move == "B")
-                new_move_string += " F";
-            else if (move == "L'")
-                new_move_string += " R'";
-            else if (move == "L")
-                new_move_string += " R";
-            else if (move == "L2")
-                new_move_string += " R2";
-            else if (move == "R2")
-                new_move_string += " L2";
-            else if (move == "F2")
-                new_move_string += " B2";
-            else if (move == "B2")
-                new_move_string += " F2";
-            else
-                new_move_string += " " + move;
-            // Espelhamento esquerda-direita
-        } else if (right_left_mirror) {
-            if (move == "U'")
-                new_move_string += " U";
-            else if (move == "U")
-                new_move_string += " U'";
-            else if (move == "F'")
-                new_move_string += " F";
-            else if (move == "F")
-                new_move_string += " F'";
-            else if (move == "R'")
-                new_move_string += " L";
-            else if (move == "R")
-                new_move_string += " L'";
-            else if (move == "B'")
-                new_move_string += " B";
-            else if (move == "B")
-                new_move_string += " B'";
-            else if (move == "L'")
-                new_move_string += " R";
-            else if (move == "L")
-                new_move_string += " R'";
-            else if (move == "D'")
-                new_move_string += " D";
-            else if (move == "D")
-                new_move_string += " D'";
-            else if (move == "R2")
-                new_move_string += " L2";
-            else if (move == "L2")
-                new_move_string += " R2";
-            else
-                new_move_string += " " + move;
-            // Espelhamento frente-tras
-        } else if (front_back_mirror) {
-            if (move == "U'")
-                new_move_string += " U";
-            else if (move == "U")
-                new_move_string += " U'";
-            else if (move == "F'")
-                new_move_string += " B";
-            else if (move == "F")
-                new_move_string += " B'";
-            else if (move == "R'")
-                new_move_string += " R";
-            else if (move == "R")
-                new_move_string += " R'";
-            else if (move == "B'")
-                new_move_string += " F";
-            else if (move == "B")
-                new_move_string += " F'";
-            else if (move == "L'")
-                new_move_string += " L";
-            else if (move == "L")
-                new_move_string += " L'";
-            else if (move == "D'")
-                new_move_string += " D";
-            else if (move == "D")
-                new_move_string += " D'";
-            else if (move == "B2")
-                new_move_string += " F2";
-            else if (move == "F2")
-                new_move_string += " B2";
-            else
-                new_move_string += " " + move;
+        string new_move = move;
+        // Espelhamento esquerda-direita
+        if (right_left_mirror) {
+            if (new_move == "U'")
+                new_move = "U";
+            else if (new_move == "U")
+                new_move = "U'";
+            else if (new_move == "F'")
+                new_move = "F";
+            else if (new_move == "F")
+                new_move = "F'";
+            else if (new_move == "R'")
+                new_move = "L";
+            else if (new_move == "R")
+                new_move = "L'";
+            else if (new_move == "B'")
+                new_move = "B";
+            else if (new_move == "B")
+                new_move = "B'";
+            else if (new_move == "L'")
+                new_move = "R";
+            else if (new_move == "L")
+                new_move = "R'";
+            else if (new_move == "D'")
+                new_move = "D";
+            else if (new_move == "D")
+                new_move = "D'";
+            else if (new_move == "R2")
+                new_move = "L2";
+            else if (new_move == "L2")
+                new_move = "R2";
         }
-    }
 
+        // Espelhamento frente-tras
+        if (front_back_mirror) {
+            if (new_move == "U'")
+                new_move = "U";
+            else if (new_move == "U")
+                new_move = "U'";
+            else if (new_move == "F'")
+                new_move = "B'";
+            else if (new_move == "F")
+                new_move = "B";
+            else if (new_move == "R'")
+                new_move = "R";
+            else if (new_move == "R")
+                new_move = "R'";
+            else if (new_move == "B'")
+                new_move = "F";
+            else if (new_move == "B")
+                new_move = "F'";
+            else if (new_move == "L'")
+                new_move = "L";
+            else if (new_move == "L")
+                new_move = "L'";
+            else if (new_move == "D'")
+                new_move = "D";
+            else if (new_move == "D")
+                new_move = "D'";
+            else if (new_move == "B2")
+                new_move = "F2";
+            else if (new_move == "F2")
+                new_move = "B2";
+        }
+
+        // Espelhamento cima-baixo
+        if (up_down_mirror) {
+            if (new_move == "U'")
+                new_move = "D'";
+            else if (new_move == "U")
+                new_move = "D";
+            else if (new_move == "F'")
+                new_move = "F";
+            else if (new_move == "F")
+                new_move = "F'";
+            else if (new_move == "R'")
+                new_move = "R";
+            else if (new_move == "R")
+                new_move = "R'";
+            else if (new_move == "B'")
+                new_move = "B";
+            else if (new_move == "B")
+                new_move = "B'";
+            else if (new_move == "L'")
+                new_move = "L";
+            else if (new_move == "L")
+                new_move = "L'";
+            else if (new_move == "D'")
+                new_move = "U'";
+            else if (new_move == "D")
+                new_move = "U";
+            else if (new_move == "U2")
+                new_move = "D2";
+            else if (new_move == "D2")
+                new_move = "U2";
+        }
+        new_move_string += " " + new_move;
+    }
     return new_move_string;
 }
 
@@ -1147,7 +1151,7 @@ string Solver::F2L() {
                     // voltar ao normal (sem a peça no sitio)
                     move(move_to_remove_udslice + " D");
                     string move_to_remove_udslice_mirror =
-                        mirror_move(move_to_remove_udslice, 0, 1);
+                        mirror_move(move_to_remove_udslice, 0, 0, 1);
                     move(move_to_remove_udslice_mirror + " D'");
 
                     move_sequence += " " + move_to_remove_udslice + " D" +
@@ -1185,7 +1189,7 @@ string Solver::F2L() {
                             // Aplicar o movimento e depois o reverso
                             move(move_to_remove_from_cross + " D'");
                             string move_to_remove_from_bottom_mirror =
-                                mirror_move(move_to_remove_from_cross, 0, 1);
+                                mirror_move(move_to_remove_from_cross, 0, 0, 1);
                             move(move_to_remove_from_bottom_mirror + " D");
 
                             move_sequence +=
@@ -1331,7 +1335,7 @@ string Solver::F2L() {
                         (F2L_ALGS["corner_bottom"][corner_ori].as<string>());
                 }
                 // Aplicar espelhamento
-                f2l_case = mirror_move(f2l_case, !side, !front);
+                f2l_case = mirror_move(f2l_case, !side, 0, !front);
                 move(f2l_case);
                 move_sequence += " " + f2l_case;
 

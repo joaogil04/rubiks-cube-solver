@@ -116,7 +116,7 @@ class Solver {
     void move(const string move_string);
     string revert_move(const string move_string);
     string mirror_move(const string move_string, int right_left_mirror,
-                       int front_back_mirror);
+                       int up_down_mirror, int front_back_mirror);
 
     // Etapas de resolução do cubo
     string EO();
