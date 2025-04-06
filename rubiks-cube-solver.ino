@@ -23,6 +23,136 @@ ESP8266WebServer server(80);
 #endif
 
 
+//ajustar depois
+#define SERVOS_0 100
+#define SERVOS_90 350
+#define SERVOS_180 600
+#define DELAY 1000 
+
+char cube_state[] = "UFRBLD";
+int valueServo1 = SERVOS_90;
+int valueServo2 = SERVOS_180;
+
+void rotate_base_clock(){
+  valueServo1 -= SERVOS_90;
+  delay(DELAY);
+}
+
+void rotate_base_counter_clock(){
+  valueServo1 += SERVOS_90;
+  delay(DELAY);
+}
+
+void rotate_cubo_up(){
+  valueServo2 = SERVOS_180;
+  delay(DELAY);
+  char temp = cube_state[0];
+  cube_state[0] = cube_state[3];
+  cube_state[3] = cube_state[5];
+  cube_state[5] = cube_state[1];
+  cube_state[1] = temp;
+  valueServo2 = SERVOS_90;
+}
+
+void upper_lock(){
+  valueServo2 = SERVOS_90;
+  delay(DELAY);
+}
+
+void lower_lock(){
+  valueServo2 = SERVOS_0;
+  delay(DELAY);
+}
+
+void rotate_cubo_counter_clock(){
+  char temp = cube_state[1];
+  upper_lock();
+  rotate_base_counter_clock();
+  cube_state[1] = cube_state[4];
+  cube_state[4] = cube_state[3];
+  cube_state[3] = cube_state[2];
+  cube_state[2] = temp;
+}
+
+void rotate_cubo_clock(){
+  char temp = cube_state[1];
+  upper_lock();
+  rotate_base_clock();
+  cube_state[1] = cube_state[2];
+  cube_state[2] = cube_state[3];
+  cube_state[3] = cube_state[4];
+  cube_state[4] = temp;
+}
+
+void counter_clock_move(){
+  if(valueServo1 == SERVOS_180){//também pode ser 0º
+    rotate_cubo_counter_clock();
+  }
+  lower_lock();
+  rotate_base_clock();
+  rotate_cubo_counter_clock();
+}
+
+void clock_move(){
+  if(valueServo1 == SERVOS_0){//também pode ser 180º
+    rotate_cubo_clock();
+  }
+  lower_lock();
+  rotate_base_counter_clock();
+  rotate_cubo_clock();
+}
+
+void move2(){
+  if(valueServo1 != SERVOS_0 && valueServo1 != SERVOS_180){
+    rotate_cubo_clock();
+  }
+  lower_lock();
+  if(valueServo1 == SERVOS_0){
+    rotate_base_clock();
+  }else if(valueServo1 == SERVOS_180){
+    rotate_base_counter_clock();
+  }
+}
+
+void rotate_to_x(char x){
+  for(int i = 0; i < sizeof(cube_state); i++){
+    if(cube_state[i] == x){
+      int y = i;
+    }
+  }
+
+  switch (y)
+  {
+  case 0:
+    for(int i = 0; i < 2; i++){
+      rotate_cubo_up();
+    }
+    break;
+  
+  case 1:
+    rotate_cubo_up();
+    break;
+
+  case 2:
+    rotate_cubo_clock();
+    rotate_cubo_up();
+    rotate_cubo_counter_clock();
+    break;
+
+  case 3:
+    for(int i = 0; i < 3; i++){
+      rotate_cubo_up();
+    }
+    break;
+
+  case 4:
+    rotate_cubo_counter_clock();
+    rotate_cubo_up();
+    rotate_cubo_clock();
+    break;
+  }
+}
+
 // Envia ficheiro do LittleFS para o cliente
 void serveFile(const String& path, const String& contentType) {
   if (LittleFS.exists(path)) {
